@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Header from '../components/Header';
-import '../assets/css/contactUs.css'; 
+import '../assets/css/contactUs.css';
 
 const ContactUs = () => {
   const [formData, setFormData] = useState({
@@ -11,7 +11,7 @@ const ContactUs = () => {
     message: '',
   });
 
-  const [modal, setModal] = useState({ show: false, message: '' });
+  const [modal, setModal] = useState({ show: false, message: '', type: '' });
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -19,47 +19,53 @@ const ContactUs = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    // Validate name (non-empty, letters and spaces only)
+  const trimmedName = formData.name.trim();
+  if (!trimmedName) {
+    setModal({ show: true, message: 'Please enter your name.' });
+    return;
+  }
+  if (!/^[A-Za-z\s]+$/.test(trimmedName)) {
+    setModal({ show: true, message: 'Name can only contain letters and spaces.' });
+    return;
+  }
     // Validate Gmail
     if (!/^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(formData.email)) {
-      setModal({ show: true, message: 'Please enter a valid Gmail address.' });
+      setModal({ show: true, message: 'Please enter a valid Gmail address (e.g., example@gmail.com)', type: 'error' });
       return;
     }
 
-    // Validate phone (optional)
+    // Validate phone (10 digits only)
     if (formData.phone && !/^\d{10}$/.test(formData.phone)) {
-      setModal({ show: true, message: 'Please enter a valid 10-digit phone number.' });
+      setModal({ show: true, message: 'Please enter a valid 10-digit phone number', type: 'error' });
       return;
     }
 
-    setModal({ show: true, message: 'Submitting your message...' });
+    // Show submitting
+    setModal({ show: true, message: 'Submitting your message...', type: 'loading' });
 
     try {
-      const response = await fetch('http://localhost:3000/submit-form', {
+      const response = await fetch('http://localhost:5000/api/submit-form', {  // Correct port
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
-        // This fixes CORS in 99% of cases
-        credentials: 'include', // Optional: only if you use sessions
       });
 
       const result = await response.json();
 
       if (response.ok) {
-        setModal({ show: true, message: 'Thank you! We will get back to you shortly.' });
+        // SUCCESS — Show thank you
+        setModal({ show: true, message: 'Thank you! We will get back to you shortly.', type: 'success' });
         setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
       } else {
-        setModal({ show: true, message: result.error || 'Failed to submit. Please try again.' });
+        setModal({ show: true, message: result.error || 'Submission failed. Please try again.', type: 'error' });
       }
     } catch (error) {
-      console.error('Submission error:', error);
-      setModal({ show: true, message: 'Network error. Is your backend running on port 3000?' });
+      setModal({ show: true, message: 'Network error. Is your backend running on port 3000?', type: 'error' });
     }
   };
 
-  const closeModal = () => setModal({ show: false, message: '' });
+  const closeModal = () => setModal({ show: false, message: '', type: '' });
 
   return (
     <>
@@ -132,6 +138,7 @@ const ContactUs = () => {
                     className="form-control"
                     value={formData.phone}
                     onChange={handleChange}
+                    placeholder="10 digits only"
                   />
                 </div>
 
@@ -167,13 +174,16 @@ const ContactUs = () => {
         </div>
       </div>
 
-      {/* Modal */}
-      <div className={`modal ${modal.show ? 'show' : ''}`}>
+      {/* MODAL - NOW 100% VISIBLE */}
+      <div className="modal" style={{ display: modal.show ? 'flex' : 'none' }}>
         <div className="modal-content">
-          <span className="close-button" onClick={closeModal}>
-            ×
-          </span>
-          <p>{modal.message}</p>
+          <span className="close-button" onClick={closeModal}>×</span>
+          <p style={{ 
+            color: modal.type === 'success' ? 'green' : modal.type === 'error' ? 'red' : '#333',
+            fontWeight: 'bold'
+          }}>
+            {modal.message}
+          </p>
         </div>
       </div>
     </>
