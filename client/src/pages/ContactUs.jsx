@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import Header from '../components/Header';
+<<<<<<< HEAD:client/src/pages/ContactUs.jsx
 import '../assets/css/contactUs.css';
+=======
+import '../assets/css/contactUs.css'; 
+>>>>>>> 33aee037975f5be19e301a2e5cea824fff5aaa3c:my-react-app/client/src/pages/ContactUs.jsx
 
 const ContactUs = () => {
   const [formData, setFormData] = useState({
@@ -11,7 +15,11 @@ const ContactUs = () => {
     message: '',
   });
 
+<<<<<<< HEAD:client/src/pages/ContactUs.jsx
   const [modal, setModal] = useState({ show: false, message: '', type: '' });
+=======
+  const [modal, setModal] = useState({ show: false, message: '' });
+>>>>>>> 33aee037975f5be19e301a2e5cea824fff5aaa3c:my-react-app/client/src/pages/ContactUs.jsx
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -19,6 +27,7 @@ const ContactUs = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+<<<<<<< HEAD:client/src/pages/ContactUs.jsx
     // Validate name (non-empty, letters and spaces only)
   const trimmedName = formData.name.trim();
   if (!trimmedName) {
@@ -49,11 +58,38 @@ const ContactUs = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
+=======
+
+    // Validate Gmail
+    if (!/^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(formData.email)) {
+      setModal({ show: true, message: 'Please enter a valid Gmail address.' });
+      return;
+    }
+
+    // Validate phone (optional)
+    if (formData.phone && !/^\d{10}$/.test(formData.phone)) {
+      setModal({ show: true, message: 'Please enter a valid 10-digit phone number.' });
+      return;
+    }
+
+    setModal({ show: true, message: 'Submitting your message...' });
+
+    try {
+      const response = await fetch('http://localhost:3000/submit-form', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+        // This fixes CORS in 99% of cases
+        credentials: 'include', // Optional: only if you use sessions
+>>>>>>> 33aee037975f5be19e301a2e5cea824fff5aaa3c:my-react-app/client/src/pages/ContactUs.jsx
       });
 
       const result = await response.json();
 
       if (response.ok) {
+<<<<<<< HEAD:client/src/pages/ContactUs.jsx
         // SUCCESS — Show thank you
         setModal({ show: true, message: 'Thank you! We will get back to you shortly.', type: 'success' });
         setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
@@ -66,6 +102,20 @@ const ContactUs = () => {
   };
 
   const closeModal = () => setModal({ show: false, message: '', type: '' });
+=======
+        setModal({ show: true, message: 'Thank you! We will get back to you shortly.' });
+        setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
+      } else {
+        setModal({ show: true, message: result.error || 'Failed to submit. Please try again.' });
+      }
+    } catch (error) {
+      console.error('Submission error:', error);
+      setModal({ show: true, message: 'Network error. Is your backend running on port 3000?' });
+    }
+  };
+
+  const closeModal = () => setModal({ show: false, message: '' });
+>>>>>>> 33aee037975f5be19e301a2e5cea824fff5aaa3c:my-react-app/client/src/pages/ContactUs.jsx
 
   return (
     <>
@@ -138,7 +188,10 @@ const ContactUs = () => {
                     className="form-control"
                     value={formData.phone}
                     onChange={handleChange}
+<<<<<<< HEAD:client/src/pages/ContactUs.jsx
                     placeholder="10 digits only"
+=======
+>>>>>>> 33aee037975f5be19e301a2e5cea824fff5aaa3c:my-react-app/client/src/pages/ContactUs.jsx
                   />
                 </div>
 
@@ -174,6 +227,7 @@ const ContactUs = () => {
         </div>
       </div>
 
+<<<<<<< HEAD:client/src/pages/ContactUs.jsx
       {/* MODAL - NOW 100% VISIBLE */}
       <div className="modal" style={{ display: modal.show ? 'flex' : 'none' }}>
         <div className="modal-content">
@@ -184,6 +238,15 @@ const ContactUs = () => {
           }}>
             {modal.message}
           </p>
+=======
+      {/* Modal */}
+      <div className={`modal ${modal.show ? 'show' : ''}`}>
+        <div className="modal-content">
+          <span className="close-button" onClick={closeModal}>
+            ×
+          </span>
+          <p>{modal.message}</p>
+>>>>>>> 33aee037975f5be19e301a2e5cea824fff5aaa3c:my-react-app/client/src/pages/ContactUs.jsx
         </div>
       </div>
     </>

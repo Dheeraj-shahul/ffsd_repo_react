@@ -161,6 +161,7 @@ textarea.form-control {
   color: black;
   text-decoration: none;
   cursor: pointer;
+<<<<<<< HEAD:client/src/assets/css/contactUs.css
 }
 
 .modal {
@@ -198,4 +199,6 @@ textarea.form-control {
 
 .close-button:hover {
   color: #000;
+=======
+>>>>>>> 33aee037975f5be19e301a2e5cea824fff5aaa3c:my-react-app/client/src/assets/css/contactUs.css
 }
